@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PkgStoreGen", "PkgStoreGen.csproj", "{327D5B24-08D3-4F1A-8C90-31C641A14991}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{327D5B24-08D3-4F1A-8C90-31C641A14991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{327D5B24-08D3-4F1A-8C90-31C641A14991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{327D5B24-08D3-4F1A-8C90-31C641A14991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{327D5B24-08D3-4F1A-8C90-31C641A14991}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B012BFA2-5138-4A34-8F1D-240922F51D2F}
+	EndGlobalSection
+EndGlobal
