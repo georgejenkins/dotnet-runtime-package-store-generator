@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 /// <summary>
 /// Modified and unmodified code sourced from https://github.com/aws/aws-extensions-for-dotnet-cli 
@@ -35,6 +37,24 @@ namespace layers.Library
                 location = location.Substring(0, location.Length - 1);
 
             return location;
+        }
+
+        public static string FindArtifactOutput(string parentDirectory)
+        {
+            foreach (var arch in Directory.GetDirectories(parentDirectory))
+            {
+                foreach (var framework in Directory.GetDirectories(arch))
+                {
+                    string[] files = Directory.GetFiles(framework, "artifact.xml", SearchOption.TopDirectoryOnly);
+
+                    if (files.Any())
+                    {
+                        return files.FirstOrDefault();
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

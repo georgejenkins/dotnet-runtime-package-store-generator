@@ -22,8 +22,8 @@ namespace layers.Commands
         [Option('f', "framework", Required = true, HelpText = "Target framework to compile, for example: netcoreapp2.1")]
         public string TargetFramework { get; set; }
 
-        [Option('n', "layername", Required = true, HelpText = "Runtime package store name.")]
-        public string LayerName { get; set; }
+        [Option('n', "storename", Required = true, HelpText = "The name to use for the generated runtime package store zip.")]
+        public string StoreName { get; set; }
 
         [Option('p', "prejit", Required = false, HelpText = "If true the packages will be pre-jitted to improve cold start performance. This must done on an Amazon Linux environment.")]
         public bool EnableOptimization { get; set; }
@@ -52,7 +52,7 @@ namespace layers.Commands
                 throw new Exception($"Can not find package manifest {opts.Manifest}. Make sure to point to a file not a directory.");
             }
 
-            var tempDirectoryName = $"{opts.LayerName}-{DateTime.UtcNow.Ticks}".ToLower();
+            var tempDirectoryName = $"{opts.StoreName}-{DateTime.UtcNow.Ticks}".ToLower();
 
             var tempRootPath = Path.Combine(Path.GetTempPath(), tempDirectoryName);
             var storeOutputDirectory = Path.Combine(tempRootPath, Common.Constants.DEFAULT_LAYER_OPT_DIRECTORY);
@@ -65,22 +65,34 @@ namespace layers.Commands
             }
 
             var cliWrapper = new LambdaDotNetCLIWrapper(Directory.GetCurrentDirectory());
-            if (cliWrapper.Store(
+            var storeResult = cliWrapper.Store(
                 !string.IsNullOrEmpty(opts.ProjectLocation) ? opts.ProjectLocation : Directory.GetCurrentDirectory(),
                 storeOutputDirectory,
-                opts.TargetFramework, 
-                convertResult.PackageManifest, 
-                opts.EnableOptimization) != 0)
+                opts.TargetFramework,
+                convertResult.PackageManifest,
+                opts.EnableOptimization);
+
+            if (storeResult.exitCode != 0)
             {
                 throw new Exception($"Error executing the 'dotnet store' command");
             }
+
+            var manifest = ProjectUtilities.FindArtifactOutput(storeResult.filePath);
+
+            //string[] files = Directory.GetFiles(storeResult.filePath, "artifact.xml", SearchOption.AllDirectories);
+
+            var updatedContent = File.ReadAllText(manifest);
+            var manifestPath = Path.Combine(Directory.GetCurrentDirectory(), $"{opts.StoreName}.xml");
+            File.WriteAllText(manifestPath, updatedContent);
+
+            Console.WriteLine($"Created package manifest file ({manifestPath})");
 
             if (convertResult.ShouldDelete)
             {
                 File.Delete(convertResult.PackageManifest);
             }
 
-            var zipPath = Path.Combine(Path.GetTempPath(), $"{opts.LayerName}-{DateTime.UtcNow.Ticks}.zip");
+            var zipPath = Path.Combine(Directory.GetCurrentDirectory(), $"{opts.StoreName}.zip");
             if (File.Exists(zipPath))
             {
                 File.Delete(zipPath);

@@ -22,6 +22,11 @@ namespace layers.Library
             _workingDirectory = workingDirectory;
         }
 
+        public class StoreResult
+        {
+            public int exitCode;
+            public string filePath;
+        }
 
         /// <summary>
         /// Execute the dotnet store command on the provided package manifest
@@ -33,7 +38,7 @@ namespace layers.Library
         /// <param name="packageManifest"></param>
         /// <param name="enableOptimization"></param>
         /// <returns></returns>
-        public int Store(string projectLocation, string outputLocation, string targetFramework, string packageManifest, bool enableOptimization)
+        public StoreResult Store(string projectLocation, string outputLocation, string targetFramework, string packageManifest, bool enableOptimization)
         {
             if (outputLocation == null)
                 throw new ArgumentNullException(nameof(outputLocation));
@@ -133,7 +138,11 @@ namespace layers.Library
                 exitCode = proc.ExitCode;
             }
 
-            return exitCode;
+            return new StoreResult()
+            {
+                exitCode = exitCode,
+                filePath = outputLocation
+            };
         }
 
         /// <summary>
